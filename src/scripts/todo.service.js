@@ -22,7 +22,7 @@ class TodoDataSource {
   #loadTasks() {
     const tasksStr = window.localStorage.getItem("tasks");
 
-    if(!tasksStr) {
+    if (!tasksStr) {
       return [];
     }
 
@@ -32,7 +32,7 @@ class TodoDataSource {
   /**
    * Private method to save task list to local storage
    */
- #saveTasks() {
+  #saveTasks() {
     window.localStorage.setItem("tasks", JSON.stringify(this.tasks));
   }
 
@@ -70,9 +70,7 @@ class TodoDataSource {
       return;
     }
 
-    for (const key in taskUpdate) {
-      existingTask[key] = taskUpdate[key];
-    }
+    Object.assign(existingTask, taskUpdate);
 
     this.#saveTasks();
 
