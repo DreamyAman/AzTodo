@@ -1,0 +1,11 @@
+.todo-high-priority-item {
+    border-left: 5px solid #dc3545 !important; 
+}
+
+.todo-medium-priority-item {
+     border-left: 5px solid #ffc107 !important; 
+}
+
+.todo-low-priority-item {
+     border-left: 5px solid #9ec5fe !important; 
+}

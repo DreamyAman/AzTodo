@@ -1,7 +1,8 @@
 class TodoListItemComponent {
-    constructor(parentElemRef, task) {
-        this.parentElemRef = parentElemRef;
-        this.task = task;
+    constructor(props) {
+        this.parentElemRef = props.parentElemRef;
+        this.task = props.task;
+        this.onDeleteCallback = props.onDeleteCallback;
         this.#onInit();
     }
 
@@ -28,15 +29,15 @@ class TodoListItemComponent {
 
         switch (task.priority) {
             case TaskPriority.LOW:
-                liClassList += " list-group-item-primary";
+                liClassList += " todo-low-priority-item";
                 break;
 
             case TaskPriority.MEDIUM:
-                liClassList += " list-group-item-warning";
+                liClassList += " todo-medium-priority-item";
                 break;
 
             case TaskPriority.HIGH:
-                liClassList += " list-group-item-danger";
+                liClassList += " todo-high-priority-item";
                 break;
         }
 
@@ -86,6 +87,9 @@ class TodoListItemComponent {
 
         // append the complete li element to parent ul element
         this.parentElemRef.appendChild(li);
+
+        // add li element to instance
+        this.li = li;
     }
 
     #handleStatusToggle(isCompleted) {
@@ -93,10 +97,18 @@ class TodoListItemComponent {
     }
 
     #handleDelete() {
-        console.log("Deleting...", this.task.name);
+        // call the parent callback method to clear the task
+        this.onDeleteCallback(this.task);
     }
 
     #handleEdit() {
         console.log("Editing...", this.task.name);
+    }
+
+    /**
+     *  Clear the resources like li element.
+     */
+    destroy() {
+        this.parentElemRef.removeChild(this.li);
     }
 }
