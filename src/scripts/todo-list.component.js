@@ -37,14 +37,34 @@ class TodoListComponent {
                 // task to render in the list item UI component
                 task,
                 // call by the list item component when delete action is triggered
-                onDeleteCallback: (task) => this.#handleTaskDelete(task)
+                onDeleteCallback: (task) => this.#handleTaskDelete(task),
+                // call by the list item component when task toggle action is triggered
+                onToggleCallback: (task, isCompleted) => this.#handleTaskToggle(task, isCompleted)
             };
 
 
-            const taskItemComponent = new TodoListItemComponent(props);
+            const taskItemComponent = new TodoListItemComponent(taskListItemProps);
 
             this.taskItemComponents.set(task.id, taskItemComponent);
         }
+    }
+
+    #handleTaskToggle(task, isCompleted) {
+        // toggle the task status
+        const taskStatus = {
+            status: isCompleted ? TaskStatus.COMPLETED : TaskStatus.TODO
+        }
+
+        // update the task status in data source
+        this.taskDataSource.updateTask(task.id, taskStatus);
+
+
+        // get the list item from component
+        const taskItemComponent = this.taskItemComponents.get(task.id);
+
+        // update the task list item <li> UI
+        taskItemComponent.destroy();
+        taskItemComponent.render();
     }
 
     /**
@@ -58,7 +78,7 @@ class TodoListComponent {
         // get the list item from component
         const taskItemComponent = this.taskItemComponents.get(task.id);
 
-        //
+        // destry the component
         taskItemComponent.destroy();
 
         this.taskItemComponents.delete(task.id);

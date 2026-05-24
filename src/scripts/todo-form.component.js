@@ -31,7 +31,9 @@ class TaskFormComponent {
     const taskName = taskForm.taskName.value.trim();
     const taskPriority = taskForm.taskPriority.value.trim();
 
-    if (!taskName.length || !taskPriority.length) {
+    const isTasNameBlank = !taskName.length || taskName === " ";
+
+    if (isTasNameBlank || !taskPriority.length) {
       alert("Input cannot be blanked");
     }
 

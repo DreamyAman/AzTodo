@@ -3,10 +3,17 @@ class TodoListItemComponent {
         this.parentElemRef = props.parentElemRef;
         this.task = props.task;
         this.onDeleteCallback = props.onDeleteCallback;
+        this.onToggleCallback = props.onToggleCallback;
         this.#onInit();
     }
 
+    /**
+     * Creates the event handlers for checkbox, edit and delete buttons.
+     */
     #onInit() {
+        this.statusToggleEventHanlder = (event) => this.#handleStatusToggle(event.target.checked);
+        this.editEventHandler = () => this.#handleEdit();
+        this.deleteEventHandler = () => this.#handleDelete();
         this.render();
     }
 
@@ -24,6 +31,8 @@ class TodoListItemComponent {
      */
     render() {
         const task = this.task;
+
+        const isTaskCompleted = task.status === TaskStatus.COMPLETED;
 
         let liClassList = "list-group-item d-flex justify-content-between align-items-center";
 
@@ -53,7 +62,12 @@ class TodoListItemComponent {
         todoMarkCheckbox.setAttribute("type", "checkbox");
         todoMarkCheckbox.setAttribute("class", "form-check-input me-1");
         todoMarkCheckbox.setAttribute("id", listItemInputId);
-        todoMarkCheckbox.addEventListener("change", (event) => this.#handleStatusToggle(event.target.checked))
+        if (isTaskCompleted) {
+            todoMarkCheckbox.setAttribute("checked", true);
+        } else {
+            todoMarkCheckbox.removeAttribute("checked");
+        }
+        todoMarkCheckbox.addEventListener("change", this.statusToggleEventHanlder)
 
         // append the input to li element
         li.appendChild(todoMarkCheckbox);
@@ -62,7 +76,8 @@ class TodoListItemComponent {
         const todoMarkCheckboxLabel = document.createElement("label");
         todoMarkCheckboxLabel.setAttribute("class", "form-check-label");
         todoMarkCheckboxLabel.setAttribute("for", listItemInputId);
-        todoMarkCheckboxLabel.innerHTML = task.name;
+        const taskNameClass = isTaskCompleted ? "text-decoration-line-through" : "";
+        todoMarkCheckboxLabel.innerHTML = `<span class="${taskNameClass}">${task.name}</span>`;
 
         // append the label to li element
         li.appendChild(todoMarkCheckboxLabel);
@@ -72,7 +87,7 @@ class TodoListItemComponent {
         const editBtn = document.createElement("button");
         editBtn.setAttribute("class", "btn");
         editBtn.innerHTML = `<span class="fa fa-edit"></span>`;
-        editBtn.addEventListener("click", () => this.#handleEdit());
+        editBtn.addEventListener("click", this.editEventHandler);
 
         // append the edit button to li element
         li.appendChild(editBtn);
@@ -80,7 +95,7 @@ class TodoListItemComponent {
         const deleteBtn = document.createElement("button");
         deleteBtn.setAttribute("class", "btn");
         deleteBtn.innerHTML = `<span class="fa fa-trash"></span>`;
-        deleteBtn.addEventListener("click", () => this.#handleDelete());
+        deleteBtn.addEventListener("click", this.deleteEventHandler);
 
         // append the delete button to li element
         li.appendChild(deleteBtn);
@@ -88,12 +103,16 @@ class TodoListItemComponent {
         // append the complete li element to parent ul element
         this.parentElemRef.appendChild(li);
 
-        // add li element to instance
+        // add elements to instance
         this.li = li;
+        this.todoMarkCheckbox = todoMarkCheckbox;
+        this.editBtn = editBtn;
+        this.deleteBtn = deleteBtn;
     }
 
     #handleStatusToggle(isCompleted) {
-        console.log("Toggle...", this.task.name, isCompleted);
+        // call the parent callback method to toggle the status
+        this.onToggleCallback(this.task, isCompleted);
     }
 
     #handleDelete() {
@@ -109,6 +128,12 @@ class TodoListItemComponent {
      *  Clear the resources like li element.
      */
     destroy() {
+        // free/clean the memory resources
+        this.todoMarkCheckbox.removeEventListener("change", this.editEventHandler);
+        this.editBtn.removeEventListener("click", this.editEventHandler);
+        this.deleteBtn.removeEventListener("click", this.deleteEventHandler);
+
+        // delete the li element
         this.parentElemRef.removeChild(this.li);
     }
 }
