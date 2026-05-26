@@ -4,8 +4,8 @@
  * Controls the adding of new task through UI.
  */
 class TaskFormComponent {
-  constructor(taskDataSource) {
-    this.taskDataSource = taskDataSource;
+  constructor(props) {
+    this.onTaskAddedCallback = props.onTaskAddedCallback;
     this.#onInit();
   }
 
@@ -19,7 +19,7 @@ class TaskFormComponent {
 
     this.taskForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      this.#addTask(taskForm);
+      this.#addTask(this.taskForm);
     });
   }
 
@@ -35,6 +35,7 @@ class TaskFormComponent {
 
     if (isTasNameBlank || !taskPriority.length) {
       alert("Input cannot be blanked");
+      return;
     }
 
     // task
@@ -43,16 +44,20 @@ class TaskFormComponent {
       priority: taskPriority,
     };
 
-    this.taskDataSource.addTask(task);
+    this.#resetDefaults();
 
-    this.render();
+    this.onTaskAddedCallback(task);
   }
 
-  render() {
+  #resetDefaults() {
     // clear input
     this.taskNameElemRef.value = null;
 
     // reset selected to HIGH
     this.taskPriorityElemRef.value = TaskPriority.HIGH;
+  }
+
+  render() {
+    this.#resetDefaults();
   }
 }

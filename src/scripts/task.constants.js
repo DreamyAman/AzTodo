@@ -8,7 +8,7 @@ const TaskStatus = {
 }
 
 /**
- * Task prority enum constants
+ * Task priority enum constants
  */
 const TaskPriority = {
     LOW: "LOW",

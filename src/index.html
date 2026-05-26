@@ -15,11 +15,7 @@
   <main>
     <!-- stats -->
     <section id="statsBanner" class="container">
-      <div class="row">
-        <p class="col-4">High</p>
-        <p class="col-4">Medium</p>
-        <p class="col-4">Low</p>
-      </div>
+
     </section>
 
     <hr />
@@ -57,6 +53,38 @@
 
       </div>
     </section>
+
+    <!-- task edit modal -->
+    <div class="modal fade" id="taskEditModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit task</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <!-- task edit form -->
+            <section id="taskEditWrapper" class="container">
+              <form id="taskEditForm">
+                <div class="d-flex">
+                  <input name="taskName" id="editedTaskName" type="text" class="form-control" placeholder="Task name" />
+
+                  <select class="form-control" name="taskPriority" id="editedTaskPriority">
+                    <option value="HIGH">High</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="LOW">Low</option>
+                  </select>
+                </div>
+              </form>
+            </section>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" id="taskEditSubmitBtn" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
@@ -67,9 +95,12 @@
   <script src="./scripts/task.constants.js"></script>
   <script src="./scripts/utils.js"></script>
   <script src="./scripts/todo.service.js"></script>
+  <script src="./scripts/todo-stats.component.js"></script>
   <script src="./scripts/todo-form.component.js"></script>
+  <script src="./scripts/todo-edit-form.component.js"></script>
   <script src="./scripts/todo-list-item.component.js"></script>
   <script src="./scripts/todo-list.component.js"></script>
+  <script src="./scripts/app.component.js"></script>
   <script src="./scripts/main.js"></script>
 </body>
 

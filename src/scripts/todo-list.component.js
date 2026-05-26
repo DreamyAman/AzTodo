@@ -2,8 +2,9 @@
  * Task list (parent) container to manage the list items (children). 
  */
 class TodoListComponent {
-    constructor(taskDataSource) {
-        this.taskDataSource = taskDataSource;
+    constructor(props) {
+        this.todoDataSource = props.todoDataSource;
+        this.onTaskUpdatedCallback = props.onTaskUpdatedCallback;
         this.#onInit();
     }
 
@@ -14,6 +15,18 @@ class TodoListComponent {
     #onInit() {
         this.taskListElemRef = document.getElementById("taskList");
 
+        this.commonProps = {
+            // <ul> element used by the list item components to append the <li>
+            parentElemRef: this.taskListElemRef,
+            // call by the list item component when delete action is triggered
+            onDeleteCallback: (task) => this.#handleTaskDelete(task),
+            // call by the list item component when task toggle action is triggered
+            onToggleCallback: (task, isCompleted) => this.#handleTaskToggle(task, isCompleted),
+            // call by the list item componet when task is edited
+            onEditCallback: (updatedTask) => this.#handleTaskEdit(updatedTask)
+        }
+
+
         this.render();
     }
 
@@ -21,7 +34,7 @@ class TodoListComponent {
      * Renders the tasks as list items in the UI.
      */
     render() {
-        const taskList = this.taskDataSource.listTasks();
+        const taskList = this.todoDataSource.listTasks();
 
         // empty the <ul> element before showing the new <li> items
         this.taskListElemRef.innerHTML = "";
@@ -32,14 +45,9 @@ class TodoListComponent {
         for (const task of taskList) {
             // ctor properties to set in the todo list item component 
             const taskListItemProps = {
-                // <ul> element used by the list item components to append the <li>
-                parentElemRef: this.taskListElemRef,
+                ...this.commonProps,
                 // task to render in the list item UI component
                 task,
-                // call by the list item component when delete action is triggered
-                onDeleteCallback: (task) => this.#handleTaskDelete(task),
-                // call by the list item component when task toggle action is triggered
-                onToggleCallback: (task, isCompleted) => this.#handleTaskToggle(task, isCompleted)
             };
 
 
@@ -56,7 +64,7 @@ class TodoListComponent {
         }
 
         // update the task status in data source
-        this.taskDataSource.updateTask(task.id, taskStatus);
+        this.todoDataSource.updateTask(task.id, taskStatus);
 
 
         // get the list item from component
@@ -64,7 +72,9 @@ class TodoListComponent {
 
         // update the task list item <li> UI
         taskItemComponent.destroy();
-        taskItemComponent.render();
+
+        // notify parent about update
+        this.onTaskUpdatedCallback(task);
     }
 
     /**
@@ -73,7 +83,7 @@ class TodoListComponent {
      */
     #handleTaskDelete(task) {
         // remove the task from data source
-        this.taskDataSource.removeTask(task.id);
+        this.todoDataSource.removeTask(task.id);
 
         // get the list item from component
         const taskItemComponent = this.taskItemComponents.get(task.id);
@@ -82,5 +92,21 @@ class TodoListComponent {
         taskItemComponent.destroy();
 
         this.taskItemComponents.delete(task.id);
+
+        // notify parent about update
+        this.onTaskUpdatedCallback(task);
+    }
+
+    #handleTaskEdit(updatedTask) {
+        this.todoDataSource.updateTask(updatedTask.id, updatedTask);
+
+        // get the list item from component
+        const taskItemComponent = this.taskItemComponents.get(updatedTask.id);
+
+        // update the task list item <li> UI
+        taskItemComponent.destroy();
+
+        // notify parent about update
+        this.onTaskUpdatedCallback(updatedTask);
     }
 }

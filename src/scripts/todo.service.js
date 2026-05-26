@@ -85,6 +85,59 @@ class TodoDataSource {
   }
 
   /**
+   * @returns the stats of all tasks. 
+   * @example {
+      highCount: 5,
+      lowCount: 10,
+      mediumCount: 5,
+      pendingCount: 10,
+      completedCount: 1,
+      total: 31
+    };
+   */
+  stats() {
+    const statsRecord = {
+      highCount: 0,
+      lowCount: 0,
+      mediumCount: 0,
+      pendingCount: 0,
+      completedCount: 0,
+      total: this.tasks.length
+    };
+
+    for (const task of this.tasks) {
+      // accumalate the count of priority
+      switch (task.priority) {
+        case TaskPriority.LOW:
+          statsRecord.lowCount += 1;
+          break;
+
+        case TaskPriority.MEDIUM:
+          statsRecord.mediumCount += 1;
+          break;
+
+        case TaskPriority.HIGH:
+          statsRecord.highCount += 1;
+          break;
+      }
+
+      // accumalate the count of status
+      switch (task.status) {
+        case TaskStatus.TODO:
+          statsRecord.pendingCount += 1;
+          break;
+
+        case TaskStatus.COMPLETED:
+          statsRecord.completedCount += 1;
+          break;
+      }
+
+    }
+
+    return statsRecord;
+  }
+
+  /**
    * Delete a task by id
    *
    * @returns nothing

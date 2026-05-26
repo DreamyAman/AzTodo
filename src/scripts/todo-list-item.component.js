@@ -4,6 +4,7 @@ class TodoListItemComponent {
         this.task = props.task;
         this.onDeleteCallback = props.onDeleteCallback;
         this.onToggleCallback = props.onToggleCallback;
+        this.onEditCallback = props.onEditCallback;
         this.#onInit();
     }
 
@@ -75,7 +76,6 @@ class TodoListItemComponent {
         // input checkbox label element
         const todoMarkCheckboxLabel = document.createElement("label");
         todoMarkCheckboxLabel.setAttribute("class", "form-check-label");
-        todoMarkCheckboxLabel.setAttribute("for", listItemInputId);
         const taskNameClass = isTaskCompleted ? "text-decoration-line-through" : "";
         todoMarkCheckboxLabel.innerHTML = `<span class="${taskNameClass}">${task.name}</span>`;
 
@@ -121,7 +121,14 @@ class TodoListItemComponent {
     }
 
     #handleEdit() {
-        console.log("Editing...", this.task.name);
+        // create the task edit form within a modal
+        this.editModal = new TaskEditFormComponent({
+            task: this.task,
+            onEditCallback: this.onEditCallback
+        });
+
+        // show the modal
+        this.editModal.show();
     }
 
     /**
@@ -135,5 +142,11 @@ class TodoListItemComponent {
 
         // delete the li element
         this.parentElemRef.removeChild(this.li);
+
+        // if model exists and still opened then, delete the modal instance
+        // to clean up the form values of this tasks
+        if (this.editModal) {
+            this.editModal.destroy();
+        }
     }
 }
